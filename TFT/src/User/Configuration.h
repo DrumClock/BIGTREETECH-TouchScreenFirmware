@@ -111,7 +111,7 @@
  *
  * :[2400, 9600, 19200, 38400, 57600, 115200, 250000, 500000, 1000000]
  */
-#define BAUDRATE 115200
+#define BAUDRATE 250000
 
 /**
  * Default Primary Language (for Touch-Mode only)
@@ -182,9 +182,9 @@
 #define LISTVIEW_BORDER_COLOR      15 // Border color in List view
 #define LISTVIEW_ICON_COLOR        15 // icon color in List view
 
-#define HOTEND_NUM   1    // set in 1~6
-#define EXTRUDER_NUM 1    // set in 1~6
-#define FAN_NUM      1    // set in 1~6
+#define HOTEND_NUM   2    // set in 1~6
+#define EXTRUDER_NUM 2   // set in 1~6
+#define FAN_NUM      2    // set in 1~6
 #define FAN_CTRL_NUM 0    // set in 1~2
 #define MIXING_EXTRUDER 0 // set default 0, for mixing_extruder 1 (this option turns off autodetection of the number of extruders)
 
@@ -233,8 +233,8 @@
 #define X_MIN_POS 0
 #define Y_MIN_POS 0
 #define Z_MIN_POS 0
-#define X_MAX_POS 235
-#define Y_MAX_POS 235
+#define X_MAX_POS 330
+#define Y_MAX_POS 330
 #define Z_MAX_POS 250
 
 // Specify a pause position as { X, Y, Z_raise }
@@ -448,13 +448,13 @@
 #define HOME_BEFORE_PLR false   //to enabled: true | to disabled: false
 
 // Backup power / UPS to move Z axis on power loss
-#define BTT_MINI_UPS    false   //to enabled: true | to disabled: false
+#define BTT_MINI_UPS    true   //to enabled: true | to disabled: false
 
 // (mm) Raise Z axis on resume (on power loss with UPS)
-#define POWER_LOSS_ZRAISE 10
+#define POWER_LOSS_ZRAISE 20
 
 // Prevent extrusion if the temperature is below set temperature
-#define PREVENT_COLD_EXTRUSION_MINTEMP 180
+#define PREVENT_COLD_EXTRUSION_MINTEMP 170
 
 /**
  * Maximum hotend temperature of automatic shut down after printing.
@@ -483,8 +483,8 @@
  *
  * CUSTOM_X_LABEL is the name of the custom button, CUSTOM_X_GCODE is the G-code to be sent by the custom button, this should always end with a New-Line character '\n'
  */
-#define CUSTOM_0_LABEL "Disable Steppers"
-#define CUSTOM_0_GCODE "M84\n"
+#define CUSTOM_0_LABEL "Dis. Servo Steppers"
+#define CUSTOM_0_GCODE "M280 P0 S90\nM84\n"
 #define CUSTOM_1_LABEL "Init SD Card"
 #define CUSTOM_1_GCODE "M21\n"
 #define CUSTOM_2_LABEL "Release SD Card"
@@ -522,12 +522,12 @@
  * Enable Start & End G-code in SETTINGS -> FEATURE menu.
  */
 // Start G-code - run this G-code before starting print
-#define PRINT_START_GCODE "G28 XY R10\n" // Raise Z 10mm before homing X & Y
+#define PRINT_START_GCODE "M75\n" //"G28 XY R10\n" // Raise Z 10mm before homing X & Y
 
 // End G-code - run this G-code after finishing print
-#define PRINT_END_GCODE "G90\nG1 E-4\nG92 E0\nM18\n" // Switch to absolute positioning, reduce filament pressure by performing small retract, reset extruder position, disable steppers
+#define PRINT_END_GCODE "M77\n" // "G90\nG1 E-4\nG92 E0\nM18\n" // Switch to absolute positioning, reduce filament pressure by performing small retract, reset extruder position, disable steppers
 
 // Cancel G-code - run this G-code after canceling print
-#define PRINT_CANCEL_GCODE "M104 S0\nM140 S0\nG28 XY R10\nM107\nM18\n" // Home XY and raise Z 10mm
+#define PRINT_CANCEL_GCODE "M77\n" // "M104 S0\nM140 S0\nG28 XY R10\nM107\nM18\n" // Home XY and raise Z 10mm
 
 #endif
