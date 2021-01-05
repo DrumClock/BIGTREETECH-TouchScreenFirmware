@@ -171,7 +171,7 @@
  *  TOAST: A Toast notification is displayed for few seconds. No user interaction is needed
  *
  */
-#define ACK_NOTIFICATION_STYLE 1
+#define ACK_NOTIFICATION_STYLE 2
 
 /**
  * Default Touch Mode Color Options
