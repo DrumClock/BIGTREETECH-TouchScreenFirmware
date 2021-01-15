@@ -1,7 +1,7 @@
 #include "SendGcode.h"
 #include "includes.h"
 
-#define TERMINAL_MAX_CHAR NOBEYOND(600, RAM_SIZE*75, 4800)
+#define TERMINAL_MAX_CHAR NOBEYOND(600, RAM_SIZE*50, 4800)
 #define MAX_BUFF          20
 #define SCROLL_LINE       22
 #define SCROLL_PAGE       1
@@ -315,7 +315,7 @@ const char * const gcodeKey[][GKEY_KEY_NUM] = {
     "7", "8", "9", "E", "F", "R", "Q",
     ".", "0", "-", "~", "I", "J", "P",
 #else
-  #if TERMINAL_KEYBOARD_QWERTY_LAYOUT == 1
+  #ifdef TERMINAL_KEYBOARD_QWERTY_LAYOUT
     "\\","|", "!", "\"","$", "%", "&", "/", "=", "?",
     "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
     "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P",
