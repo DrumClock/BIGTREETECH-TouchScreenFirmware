@@ -45,10 +45,21 @@ void Hardware_GenericInit(void)
   XPT2046_Init();
   W25Qxx_Init();
   LCD_Init();
-  readStoredPara();
-  LCD_RefreshDirection();  //refresh display direction after reading settings
-  scanUpdates();
-  #ifndef MKS_32_V1_4
+  readStoredPara();         // Read settings parameter
+  LCD_RefreshDirection();   // refresh display direction after reading settings
+  scanUpdates();            // scan icon, fonts and config files
+  checkflashSign();         // check font/icon/config signature in SPI flash for update
+  initMachineSetting();     // load default machine settings
+
+  #ifdef LED_COLOR_PIN
+    knob_LED_Init();
+  #endif
+
+  #ifdef BUZZER_PIN
+    Buzzer_Config();
+  #endif
+
+  #if !defined(MKS_32_V1_4) && !defined (MKS_28_V1_0)
     //causes hang if we deinit spi1
     SD_DeInit();
   #endif
