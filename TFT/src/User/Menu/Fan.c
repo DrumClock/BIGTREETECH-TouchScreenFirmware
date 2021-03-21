@@ -6,27 +6,30 @@ static uint8_t curIndex = 0;
 const ITEM itemFan[2] = {
   // icon                        label
   {ICON_FAN,                     LABEL_FAN},
-  {ICON_FAN_HALF_SPEED,          LABEL_FAN_HALF_SPEED},
+  {ICON_FAN_HALF_SPEED,          LABEL_HALF},
 };
 
 void fanSpeedReDraw(bool skip_header)
 {
   char tempstr[20];
 
+  setLargeFont(true);
+
   if (!skip_header)
   {
     sprintf(tempstr, "%-15s", fanID[curIndex]);
-    GUI_DispString(exhibitRect.x0, exhibitRect.y0, (u8 *)tempstr);
+    setLargeFont(false);
+    GUI_DispString(exhibitRect.x0, exhibitRect.y0, (uint8_t *)tempstr);
     setLargeFont(true);
+
     if (infoSettings.fan_percentage == 1)
     {
-      GUI_DispStringCenter((exhibitRect.x0 + exhibitRect.x1)>>1, exhibitRect.y0, (uint8_t *)"%");
+      GUI_DispStringCenter((exhibitRect.x0 + exhibitRect.x1) >> 1, exhibitRect.y0, (uint8_t *)"%");
     }
     else
     {
-      GUI_DispStringCenter((exhibitRect.x0 + exhibitRect.x1)>>1, exhibitRect.y0, (uint8_t *)"RAW");
+      GUI_DispStringCenter((exhibitRect.x0 + exhibitRect.x1) >> 1, exhibitRect.y0, (uint8_t *)"PWM");
     }
-    setLargeFont(false);
   }
 
   if (infoSettings.fan_percentage == 1)
@@ -34,8 +37,7 @@ void fanSpeedReDraw(bool skip_header)
   else
     sprintf(tempstr, "  %d/%d  ", (int)fanGetCurSpeed(curIndex), (int)fanGetSetSpeed(curIndex));
 
-  setLargeFont(true);
-  GUI_DispStringInPrect(&exhibitRect, (u8 *)tempstr);
+  GUI_DispStringInPrect(&exhibitRect, (uint8_t *)tempstr);
   setLargeFont(false);
 }
 
@@ -45,15 +47,17 @@ void menuFan(void)
   MENUITEMS fanItems = {
     // title
     LABEL_FAN,
-    // icon                         label
-    {{ICON_DEC,                     LABEL_DEC},
-     {ICON_BACKGROUND,              LABEL_BACKGROUND},
-     {ICON_BACKGROUND,              LABEL_BACKGROUND},
-     {ICON_INC,                     LABEL_INC},
-     {ICON_FAN ,                    LABEL_FAN},
-     {ICON_FAN_FULL_SPEED,          LABEL_FAN_FULL_SPEED},
-     {ICON_STOP,                    LABEL_STOP},
-     {ICON_BACK,                    LABEL_BACK},}
+    // icon                          label
+    {
+      {ICON_DEC,                     LABEL_DEC},
+      {ICON_BACKGROUND,              LABEL_BACKGROUND},
+      {ICON_BACKGROUND,              LABEL_BACKGROUND},
+      {ICON_INC,                     LABEL_INC},
+      {ICON_FAN ,                    LABEL_FAN},
+      {ICON_FAN_FULL_SPEED,          LABEL_FULL},
+      {ICON_STOP,                    LABEL_STOP},
+      {ICON_BACK,                    LABEL_BACK},
+    }
   };
 
   LASTFAN lastFan;
@@ -93,7 +97,7 @@ void menuFan(void)
         if (infoSettings.fan_percentage == 1)
         {
           strcpy(titlestr, "Min:0 | Max:100");
-          uint8_t val = numPadInt((u8 *) titlestr, fanGetSetPercent(curIndex), 0, false);
+          uint8_t val = numPadInt((uint8_t *) titlestr, fanGetSetPercent(curIndex), 0, false);
           val = NOBEYOND(0, val, 100);
 
           if (val != fanGetSetPercent(curIndex))
@@ -102,7 +106,7 @@ void menuFan(void)
         else
         {
           sprintf(titlestr, "Min:0 | Max:%d", infoSettings.fan_max[curIndex]);
-          uint8_t val = numPadInt((u8 *) titlestr, fanGetCurSpeed(curIndex), 0, false);
+          uint8_t val = numPadInt((uint8_t *) titlestr, fanGetCurSpeed(curIndex), 0, false);
           val = NOBEYOND(0, val,  infoSettings.fan_max[curIndex]);
 
           if (val != fanGetCurSpeed(curIndex))
@@ -110,7 +114,7 @@ void menuFan(void)
         }
 
         menuDrawPage(&fanItems);
-        fanSpeedReDraw(true);
+        fanSpeedReDraw(false);
         break;
       }
 

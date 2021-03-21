@@ -4,11 +4,11 @@
 REQUEST_COMMAND_INFO requestCommandInfo = {0};
 
 static void resetRequestCommandInfo(
-  const char *string_start,  // The magic to identify the start
-  const char *string_stop,   // The magic to identify the stop
-  const char *string_error0, // The first magic to identify the error response
-  const char *string_error1, // The second error magic
-  const char *string_error2  // The third error magic
+  const char *string_start,   // The magic to identify the start
+  const char *string_stop,    // The magic to identify the stop
+  const char *string_error0,  // The first magic to identify the error response
+  const char *string_error1,  // The second error magic
+  const char *string_error2   // The third error magic
 )
 {
   requestCommandInfo.cmd_rev_buf = malloc(CMD_MAX_REV);
@@ -29,7 +29,7 @@ static void resetRequestCommandInfo(
 
   while (infoCmd.count || infoHost.wait)
   {
-    loopProcess(); // Wait for the communication to be clean before requestCommand
+    loopProcess();  // Wait for the communication to be clean before requestCommand
   }
 
   requestCommandInfo.inWaitResponse = true;
@@ -59,21 +59,22 @@ void clearRequestCommandInfo(void)
 */
 bool request_M21(void)
 {
- const char * sdString = (infoMachineSettings.firmwareType == FW_REPRAPFW) ? "SDHC card " : "SD card ";
+  const char * sdString = (infoMachineSettings.firmwareType == FW_REPRAPFW) ? "card mounted " : "SD card ";
+  const char * errString1 = (infoMachineSettings.firmwareType == FW_REPRAPFW) ? "Error" : "No SD card";
 
- resetRequestCommandInfo(sdString,             // The magic to identify the start
-                         "ok",                 // The magic to identify the stop
-                         "No SD card",         // The first magic to identify the error response
-                         "SD init fail",       // The second error magic
-                         "volume.init failed"  // The third error magic
- );
- mustStoreCmd("M21\n");
+  resetRequestCommandInfo(sdString,               // The magic to identify the start
+                          "ok",                   // The magic to identify the stop
+                          errString1,             // The first magic to identify the error response
+                          "SD init fail",         // The second error magic
+                          "volume.init failed");  // The third error magic
 
- // Wait for response
- while (!requestCommandInfo.done) { loopProcess(); }
- clearRequestCommandInfo();
- // Check reponse
- return !requestCommandInfo.inError;
+  mustStoreCmd("M21\n");
+
+  // Wait for response
+  while (!requestCommandInfo.done) { loopProcess(); }
+  clearRequestCommandInfo();
+  // Check reponse
+  return !requestCommandInfo.inError;
 }
 
 char *request_M20(void)
@@ -91,7 +92,7 @@ char *request_M20(void)
   {
     loopProcess();
   }
-  //clearRequestCommandInfo(); //shall be call after copying the buffer ...
+  //clearRequestCommandInfo();  //shall be call after copying the buffer ...
   return requestCommandInfo.cmd_rev_buf;
 }
 
@@ -109,7 +110,10 @@ char *request_M33(char *filename)
                           NULL,                  // The second error magic
                           NULL);                 // The third error magic
 
-  mustStoreCmd("M33 %s\n", filename);
+  if (filename[0] != '/')
+    mustStoreCmd("M33 /%s\n", filename); // append '/' to short file path
+  else
+    mustStoreCmd("M33 %s\n", filename);
 
   // Wait for response
   while (!requestCommandInfo.done)
@@ -136,14 +140,17 @@ char *request_M33(char *filename)
 long request_M23_M36(char *filename)
 {
   uint8_t offset = 5;
-  if (infoMachineSettings.firmwareType != FW_REPRAPFW) // all other firmwares except reprap firmware
+  const char *sizeTag;
+  if (infoMachineSettings.firmwareType != FW_REPRAPFW)  // all other firmwares except reprap firmware
   {
     resetRequestCommandInfo("File opened",    // The magic to identify the start
                             "File selected",  // The magic to identify the stop
                             "open failed",    // The first magic to identify the error response
                             NULL,             // The second error magic
                             NULL);            // The third error magic
+
     mustStoreCmd("M23 %s\n", filename);
+    sizeTag = "Size:";
   }
   else // reprap firmware
   {
@@ -152,8 +159,10 @@ long request_M23_M36(char *filename)
                             "Error:",    // The first magic to identify the error response
                             NULL,        // The second error magic
                             NULL);       // The third error magic
+
     mustStoreCmd("M36 %s\n", filename);
     offset = 6;
+    sizeTag = "size\":";  // reprap firmware reports size JSON
   }
 
   // Wait for response
@@ -164,10 +173,10 @@ long request_M23_M36(char *filename)
     return 0;
   }
   if (infoMachineSettings.firmwareType == FW_REPRAPFW)
-    mustStoreCmd("M23 %s\n", filename); //send M23 for reprap firmware
+    mustStoreCmd("M23 %s\n", filename);  //send M23 for reprap firmware
   // Find file size and report its.
   char *ptr;
-  long size = strtol(strstr(requestCommandInfo.cmd_rev_buf, "Size:") + offset, &ptr, 10);
+  long size = strtol(strstr(requestCommandInfo.cmd_rev_buf, sizeTag) + offset, &ptr, 10);
   clearRequestCommandInfo();
   return size;
 }
@@ -192,12 +201,13 @@ bool request_M524(void)
   mustStoreCmd("M524\n");
   return true;
 }
+
 /**
  * Pause print
  **/
 bool request_M25(void)
 {
-  mustStoreCmd("M25\n");
+  mustStoreCmd("M25 P1\n");
   return true;
 }
 
@@ -212,5 +222,99 @@ bool request_M27(int seconds)
   return true;
 }
 
+/**
+ * Park Head / Pause Print
+ **/
+bool request_M125(void)
+{
+  mustStoreCmd("M125 P1\n");
+  return true;
+}
 
+/**
+ * Stop or Unconditional stop in reprap firmware
+ **/
+bool request_M0(void)
+{
+  mustStoreCmd("M0 \n");
+  return true;
+}
 
+void send_and_wait_M20(const char* command)
+{
+  uint32_t timeout = ((uint32_t)0x000FFFFF);
+  uint32_t waitloops = ((uint32_t)0x00000006);
+
+  resetRequestCommandInfo("{", "}", "Error:", NULL, NULL);
+  mustStoreCmd(command);
+  while ((strstr(requestCommandInfo.cmd_rev_buf, "dir") == NULL) && (waitloops > 0x00)) //(!find_part("dir"))
+  {
+    waitloops--;
+    timeout = ((uint32_t)0x0000FFFF);
+    while ((!requestCommandInfo.done) && (timeout > 0x00))
+    {
+      loopBackEnd();
+            timeout--;
+    }
+    if (timeout <= 0x00)
+    {
+      uint16_t wIndex = (dmaL1Data[SERIAL_PORT].wIndex == 0) ? ACK_MAX_SIZE : dmaL1Data[SERIAL_PORT].wIndex;
+      if (dmaL1Data[SERIAL_PORT].cache[wIndex - 1] == '}') // \n fehlt
+      {
+        BUZZER_PLAY(sound_notify); // for DEBUG
+        dmaL1Data[SERIAL_PORT].cache[wIndex] = '\n';
+        dmaL1Data[SERIAL_PORT].cache[wIndex + 1] = 0;
+        dmaL1Data[SERIAL_PORT].wIndex++;
+        infoHost.rx_ok[SERIAL_PORT] = true;
+      }
+    }
+    if (dmaL1NotEmpty(SERIAL_PORT) && !infoHost.rx_ok[SERIAL_PORT])
+    {
+      infoHost.rx_ok[SERIAL_PORT] = true;
+    }
+    if (strstr(requestCommandInfo.cmd_rev_buf, "dir") == NULL)
+    {
+      clearRequestCommandInfo();
+      resetRequestCommandInfo("{", "}", "Error:", NULL, NULL);
+      mustStoreCmd("\n");
+    }
+  }
+  return; //  requestCommandInfo.cmd_rev_buf;
+}
+
+char *request_M20_macros(char *nextdir)
+{
+  // set pause Flag
+  //infoHost.pauseGantry = true;
+  // waitPortReady();
+  clearRequestCommandInfo();
+  char command[256];
+  if ((nextdir == NULL) || strchr(nextdir, '/') == NULL)
+  {
+    strncpy(command, "M20 S2 P\"/macros\"\n", 256);
+  }
+  else
+  {
+    snprintf(command, 256, "M20 S2 P\"/macros/\"%s\n\n", nextdir);
+  }
+  // Send GCode and wait for responce
+  send_and_wait_M20(command);
+  // reset pause Flag
+  //infoHost.pauseGantry = false;
+  GUI_Clear(BACKGROUND_COLOR);
+  return requestCommandInfo.cmd_rev_buf;
+}
+
+bool request_M98(char *filename)
+{
+  char command[256];
+  snprintf(command, 256, "M98 P/macros/%s\n", filename);
+  resetRequestCommandInfo("", "ok", "Warning:", "Warning:", "Warning:");
+  mustStoreCmd(command);
+  // Wait for response
+  while (!requestCommandInfo.done)
+  {
+    loopProcess();
+  }
+  return true;
+}
