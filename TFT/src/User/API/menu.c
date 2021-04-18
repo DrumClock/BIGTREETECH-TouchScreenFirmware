@@ -266,17 +266,8 @@ uint8_t *labelGetAddress(const LABEL *label)
 
 void menuDrawItem(const ITEM *item, uint8_t position)
 {
-  uint8_t *content = labelGetAddress(&item->label);
-  const GUI_RECT *rect = curRect + position;
-  if (item->icon != ICON_BACKGROUND)
-    ICON_ReadDisplay(rect->x0, rect->y0, item->icon);
-  else
-    GUI_ClearPrect(rect);
-
-  rect = curRect + ITEM_PER_PAGE + position;
-  GUI_ClearPrect(rect);
-  if (content)
-    GUI_DispStringInPrect(rect, content);
+  menuDrawIconOnly(item, position);
+  menuDrawIconText(item, position);
 }
 
 void menuDrawIconOnly(const ITEM *item, uint8_t position)
@@ -286,6 +277,15 @@ void menuDrawIconOnly(const ITEM *item, uint8_t position)
     ICON_ReadDisplay(rect->x0, rect->y0, item->icon);
   else
     GUI_ClearPrect(rect);
+}
+
+void menuDrawIconText(const ITEM *item, uint8_t position)
+{
+  uint8_t *content = labelGetAddress(&item->label);
+  const GUI_RECT *rect = curRect + ITEM_PER_PAGE + position;
+  GUI_ClearPrect(rect);
+  if (content)
+    GUI_DispStringInPrect(rect, content);
 }
 
  void menuDrawListItem(const LISTITEM *item, uint8_t position)
@@ -712,7 +712,7 @@ KEY_VALUES menuKeyGetValue(void)
 //Get the top left point of the corresponding icon position)
 GUI_POINT getIconStartPoint(int index)
 {
-  GUI_POINT p = {curRect[index].x0,curRect[index].y0};
+  GUI_POINT p = {curRect[index].x0, curRect[index].y0};
   return p;
 }
 
@@ -749,7 +749,7 @@ GUI_POINT getIconStartPoint(int index)
       return;
     }
     #endif
- 
+
     if (longPress == false)  // check if longpress already handled
     {
       if (LCD_ReadPen(LONG_TOUCH))  // check if TSC is pressed and held
@@ -793,7 +793,7 @@ GUI_POINT getIconStartPoint(int index)
 void loopBackEnd(void)
 {
   // Get Gcode command from the file to be printed
-  getGcodeFromFile();
+  loopPrintFromTFT();  // handle a print from TFT, if any
   // Parse and send Gcode commands in the queue
   sendQueueCmd();
   // Parse the received slave response information
@@ -817,7 +817,7 @@ void loopBackEnd(void)
 
   if (infoMachineSettings.onboard_sd_support == ENABLED)
   {
-    loopCheckPrinting();  //Check if there is a SD or USB print running.
+    loopPrintFromHost();  // handle a print from onboard SD or remote host, if any
   }
 
 #ifdef U_DISK_SUPPORT
