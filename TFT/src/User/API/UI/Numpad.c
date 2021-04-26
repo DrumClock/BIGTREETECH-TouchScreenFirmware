@@ -1,4 +1,51 @@
 #include "Numpad.h"
+#include "list_item.h"
+
+#define SKEYHEIGHT (LCD_HEIGHT-ICON_START_Y)/4
+#define SKEYWIDTH  LCD_WIDTH/4
+
+#define KEY_NUM       16
+#define FLOAT_BUFLONG 9
+#define INT_BUFLONG   6
+
+typedef enum
+{
+  SKEY_0 = 0,
+  SKEY_1,
+  SKEY_2,
+  SKEY_3,
+  SKEY_4,
+  SKEY_5,
+  SKEY_6,
+  SKEY_7,
+  SKEY_8,
+  SKEY_9,
+  SKEY_10,
+  SKEY_11,
+  SKEY_IDLE = IDLE_TOUCH,
+}SKEY_VALUES;
+
+typedef enum
+{
+  NUM_KEY_1 = 0,
+  NUM_KEY_2,
+  NUM_KEY_3,
+  NUM_KEY_OK,
+  NUM_KEY_4,
+  NUM_KEY_5,
+  NUM_KEY_6,
+  NUM_KEY_DEL,
+  NUM_KEY_7,
+  NUM_KEY_8,
+  NUM_KEY_9,
+  NUM_KEY_EXIT,
+  NUM_KEY_DEC,
+  NUM_KEY_0,
+  NUM_KEY_MINUS,
+  NUM_KEY_RESET,
+
+  NUM_KEY_IDLE = IDLE_TOUCH,
+}NUM_KEY_VALUES;
 
 const GUI_RECT rect_of_numkey[KEY_NUM]={
   {0*SKEYWIDTH, ICON_START_Y+0*SKEYHEIGHT, 1*SKEYWIDTH, ICON_START_Y+1*SKEYHEIGHT},//1
@@ -125,6 +172,8 @@ void Draw_keyboard(uint8_t * title, bool NumberOnly, bool negative)
     GUI_SetColor(infoSettings.font_color);
     GUI_HLine(rect_of_numkey[0].x0,rect_of_numkey[0].y0,rect_of_numkey[3].x1);
 
+    setLargeFont(true);
+
     for (uint8_t i = 0; i < KEY_NUM ;i++)
     {
       if (!(i == NUM_KEY_DEC || i == NUM_KEY_MINUS || (i % 4) == 3))  // || i == NUM_KEY_DEL || i == NUM_KEY_EXIT || i == NUM_KEY_RESET) )
@@ -136,11 +185,12 @@ void Draw_keyboard(uint8_t * title, bool NumberOnly, bool negative)
     if (negative)
       GUI_DispStringInPrect(&rect_of_numkey[NUM_KEY_MINUS],(u8*)numPadKeyChar[NUM_KEY_MINUS]);
 
+    setLargeFont(true);
+
     DrawCharIcon(&rect_of_numkey[NUM_KEY_OK], MIDDLE, ICONCHAR_OK, false, 0);
     DrawCharIcon(&rect_of_numkey[NUM_KEY_DEL], MIDDLE, ICONCHAR_POINT_LEFT, false, 0);
     DrawCharIcon(&rect_of_numkey[NUM_KEY_EXIT], MIDDLE, ICONCHAR_CANCEL, false, 0);
     DrawCharIcon(&rect_of_numkey[NUM_KEY_RESET], MIDDLE, ICONCHAR_RESET, false, 0);
-
   #endif // KEYBOARD_MATERIAL_THEME
 
     GUI_DispStringInPrect(&arrowRect,(uint8_t *)"\u089A");
