@@ -5,7 +5,7 @@ static float z_offset_value = PROBE_Z_OFFSET_DEFAULT_VALUE;
 static bool probe_offset_enabled = false;
 
 // Enable probe offset
-void probeOffsetEnable(bool skipZOffset)
+void probeOffsetEnable(bool skipZOffset, float shim)
 {
   probe_offset_enabled = true;
 
@@ -19,18 +19,18 @@ void probeOffsetEnable(bool skipZOffset)
   {
     probeHeightRelative();                                  // set relative position mode
     mustStoreCmd("G1 X%.2f Y%.2f\n",
-                 getParameter(P_PROBE_OFFSET, X_STEPPER),
-                 getParameter(P_PROBE_OFFSET, Y_STEPPER));  // move nozzle to XY probing point and set feedrate
+                 getParameter(P_PROBE_OFFSET, AXIS_INDEX_X),
+                 getParameter(P_PROBE_OFFSET, AXIS_INDEX_Y));  // move nozzle to XY probing point and set feedrate
   }
 
   if (skipZOffset)
   {
-    probeHeightStart(-probeOffsetGetValue(), false);  // lower nozzle to probing Z0 point
-    probeOffsetSetValue(0.0f);                        // reset Z offset in order probing Z0 matches absolute Z0 point
+    probeHeightStart(-probeOffsetGetValue() + shim, false);  // lower nozzle to probing Z0 point + shim
+    probeOffsetSetValue(0.0f);                               // reset Z offset in order probing Z0 matches absolute Z0 point
   }
   else
   {
-    probeHeightStart(0.0f, false);  // lower nozzle to absolute Z0 point
+    probeHeightStart(shim, false);  // lower nozzle to absolute Z0 point + shim
   }
 
   probeHeightRelative();  // set relative position mode
@@ -68,7 +68,7 @@ float probeOffsetSetValue(float value)
 // Get current Z offset value
 float probeOffsetGetValue(void)
 {
-  z_offset_value = getParameter(P_PROBE_OFFSET, Z_STEPPER);
+  z_offset_value = getParameter(P_PROBE_OFFSET, AXIS_INDEX_Z);
 
   return z_offset_value;
 }

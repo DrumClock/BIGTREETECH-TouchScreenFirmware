@@ -21,7 +21,7 @@ extern "C" {
 #define SSICON_SECOND    ROW
 #endif
 
-//select marlin or bigtree
+// select marlin or bigtree
 #define SPACE_SELEX      ((LCD_WIDTH - ICON_WIDTH * 2) / 4)
 #define SPACE_SELEY      ((LCD_HEIGHT - ICON_HEIGHT) / 2)
 #define text_startx      (LCD_WIDTH / 2)
@@ -30,7 +30,7 @@ void LOGO_ReadDisplay(void);
 void ICON_ReadDisplay(uint16_t sx, uint16_t sy, uint8_t icon);
 bool model_DirectDisplay(GUI_POINT pos, char *gcode);
 bool model_DecodeToFlash(char *gcode);
-void ICON_CustomReadDisplay(uint16_t sx, uint16_t sy, u32 address);
+void ICON_CustomReadDisplay(uint16_t sx, uint16_t sy, uint32_t address);
 void SMALLICON_ReadDisplay(uint16_t sx, uint16_t sy, uint8_t icon);
 void ICON_PressedDisplay(uint16_t sx, uint16_t sy, uint8_t icon);
 

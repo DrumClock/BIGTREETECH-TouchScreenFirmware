@@ -6,7 +6,7 @@
 extern "C" {
 #endif
 
-#include "includes.h"
+#include <stdint.h>
 #include "menu.h"
 
 // Color Definition
@@ -118,6 +118,21 @@ extern const LABEL lcd_color_names[LCD_COLOR_COUNT];
   #define BTN_ROUND_CORNER  ((LCD_WIDTH / 100) + 0.5)
 
 #endif
+
+// Material Dark
+#define COLORSCHEME1_TERM_GCODE MAT_ORANGE
+#define COLORSCHEME1_TERM_ACK   MAT_LOWWHITE
+#define COLORSCHEME1_TERM_BACK  MAT_DARKSLATE
+
+// Material Light
+#define COLORSCHEME2_TERM_GCODE MAT_ORANGE
+#define COLORSCHEME2_TERM_ACK   MAT_DARKSLATE
+#define COLORSCHEME2_TERM_BACK  MAT_LOWWHITE
+
+// High Contrast
+#define COLORSCHEME3_TERM_GCODE ORANGE
+#define COLORSCHEME3_TERM_ACK   WHITE
+#define COLORSCHEME3_TERM_BACK  BLACK
 
 #ifdef __cplusplus
 }

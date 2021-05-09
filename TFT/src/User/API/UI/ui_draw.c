@@ -3,18 +3,18 @@
 
 #ifdef STM32_HAS_FSMC
 
-void lcd_frame_display(uint16_t sx, uint16_t sy, uint16_t w, uint16_t h, u32 addr);
+void lcd_frame_display(uint16_t sx, uint16_t sy, uint16_t w, uint16_t h, uint32_t addr);
 
 #else
 
-void lcd_frame_display(uint16_t sx, uint16_t sy, uint16_t w, uint16_t h, u32 addr)
+void lcd_frame_display(uint16_t sx, uint16_t sy, uint16_t w, uint16_t h, uint32_t addr)
 {
   uint16_t x, y;
   uint16_t color = 0;
-  u32 address = addr;
+  uint32_t address = addr;
 
   LCD_SetWindow(sx, sy, sx + w - 1, sy + h - 1);
-  LCD_WR_REG(0x2C);
+  LCD_WR_REG(TFTLCD_WRITEMEMORY);
 
   W25Qxx_SPI_CS_Set(0);
   W25Qxx_SPI_Read_Write_Byte(CMD_READ_DATA);
@@ -81,7 +81,7 @@ bool model_DirectDisplay(GUI_POINT pos, char *gcode)
   f_lseek(&gcodeFile, gcodeFile.fptr + 3);
 
   LCD_SetWindow(pos.x, pos.y, pos.x + ICON_WIDTH - 1, pos.y + ICON_HEIGHT - 1);
-  LCD_WR_REG(0x2C);
+  LCD_WR_REG(TFTLCD_WRITEMEMORY);
   for (uint16_t y = 0; y < ICON_HEIGHT; y++)
   {
     for (uint16_t x = 0; x < ICON_WIDTH; x++)
@@ -147,8 +147,8 @@ bool model_DecodeToFlash(char *gcode)
   return true;
 }
 
-//draw icon with different length and width (sx & sy cordinates for top left of icon, w width, h height, addr flash byte address)
-void ICON_CustomReadDisplay(uint16_t sx, uint16_t sy, u32 address)
+// draw icon with different length and width (sx & sy cordinates for top left of icon, w width, h height, addr flash byte address)
+void ICON_CustomReadDisplay(uint16_t sx, uint16_t sy, uint32_t address)
 {
   uint16_t w, h;
   address = getBMPsize((uint8_t *)&w, (uint8_t *)&h, address);
@@ -166,10 +166,10 @@ void ICON_PressedDisplay(uint16_t sx, uint16_t sy, uint8_t icon)
   uint16_t x, y;
   uint16_t w, h;
   uint16_t color = 0;
-  u32 address = getBMPsize((uint8_t *)&w, (uint8_t *)&h, ICON_ADDR(icon));
+  uint32_t address = getBMPsize((uint8_t *)&w, (uint8_t *)&h, ICON_ADDR(icon));
 
   LCD_SetWindow(sx, sy, sx + w - 1, sy + h - 1);
-  LCD_WR_REG(0x2C);
+  LCD_WR_REG(TFTLCD_WRITEMEMORY);
 
   W25Qxx_SPI_CS_Set(0);
   W25Qxx_SPI_Read_Write_Byte(CMD_READ_DATA);

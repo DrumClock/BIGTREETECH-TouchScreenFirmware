@@ -1,3 +1,4 @@
+#include "delay.h"
 #include "includes.h"
 
 static u16 fac_ms=0;

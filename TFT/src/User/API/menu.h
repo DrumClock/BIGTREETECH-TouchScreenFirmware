@@ -5,8 +5,8 @@
 extern "C" {
 #endif
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include "GUI.h"
 
 #define IDLE_TOUCH 0xFFFF
@@ -44,7 +44,10 @@ typedef enum
   KEY_LABEL_7,
   KEY_TITLEBAR,
   KEY_INFOBOX,
-  KEY_IDLE = IDLE_TOUCH,
+  KEY_PAGEUP   = IDLE_TOUCH - 3,
+  KEY_PAGEDOWN = IDLE_TOUCH - 2,
+  KEY_BACK     = IDLE_TOUCH - 1,
+  KEY_IDLE     = IDLE_TOUCH,
 } KEY_VALUES;
 
 typedef enum
@@ -122,8 +125,8 @@ typedef struct
 {
   uint8_t *     text;
   GUI_POINT     pos;      // relative to icon top left corner
-  uint8_t       h_align;  //left, right or center of pos point
-  uint8_t       v_align;  //left, right or center of pos point
+  uint8_t       h_align;  // left, right or center of pos point
+  uint8_t       v_align;  // left, right or center of pos point
   uint16_t      fn_color;
   uint16_t      bk_color;
   GUI_TEXT_MODE text_mode;
@@ -132,8 +135,8 @@ typedef struct
 
  typedef struct
 {
- uint8_t   enabled[LIVEICON_LINES];
- LIVE_DATA lines[LIVEICON_LINES];
+  uint8_t   enabled[LIVEICON_LINES];
+  LIVE_DATA lines[LIVEICON_LINES];
 } LIVE_INFO;
 
 void showLiveInfo(uint8_t index, const LIVE_INFO * liveicon, const ITEM * item);
@@ -161,6 +164,7 @@ uint8_t *labelGetAddress(const LABEL * label);
 void setMenu(MENU_TYPE menu_type, LABEL * title, uint16_t rectCount, const GUI_RECT * menuRect, void(*action_redraw)(uint8_t position, uint8_t is_press),  void (* menu_redraw)(void));
 void menuDrawItem (const ITEM * menuItem, uint8_t position);
 void menuDrawIconOnly(const ITEM *item, uint8_t position);
+void menuDrawIconText(const ITEM *item, uint8_t position);
 void menuDrawListItem(const LISTITEM *item, uint8_t position);
 void menuRefreshListPage(void);
 void menuDrawTitle(const uint8_t *content);  //(const MENUITEMS * menuItems);

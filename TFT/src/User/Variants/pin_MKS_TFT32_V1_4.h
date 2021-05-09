@@ -16,12 +16,12 @@
 
 // Hardware version config
 #ifndef HARDWARE_VERSION
-  #define HARDWARE_VERSION "TFT32_V4.0"
+  #define HARDWARE_VERSION "TFT32_V1.4"
 #endif
 
 // LCD interface
 #ifndef TFTLCD_DRIVER
-  #define TFTLCD_DRIVER               HX8558  // Type of LCD driver, now support[RM68042, ILI9488, ILI9341, ST7789, HX8558].
+  #define TFTLCD_DRIVER               HX8558  // Type of LCD driver, now support[RM68042, ILI9488, ILI9341, ILI9325, ST7789, HX8558].
   #define TFTLCD_0_DEGREE_REG_VALUE   0xA4
   #define TFTLCD_180_DEGREE_REG_VALUE 0X64
 #endif
@@ -49,6 +49,11 @@
 #define USART3_TX_PIN PD8
 #define USART3_RX_PIN PD9
 //#define SERIAL_PORT_4 _UART4
+
+// Serial port for debugging Serial communications
+#ifdef DEBUG_SERIAL_COMM
+  #define SERIAL_DEBUG_PORT SERIAL_PORT_3
+#endif
 
 // XPT2046 Software SPI Pins (touch screen ic)
 // need CS/SCK/MISO/MOSI for Software SPI, and TPEN for pen interrupt
@@ -171,7 +176,7 @@
 //
 
 // ST7920 Emulator SPI pins
-#define ST7920_EMULATOR  // uncomment to enable Marlin mode
+// #define ST7920_EMULATOR  // uncomment to enable Marlin mode
 #ifdef ST7920_EMULATOR
   #define ST7920_SPI _SPI3
 #endif

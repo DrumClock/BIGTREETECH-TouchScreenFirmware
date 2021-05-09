@@ -1,7 +1,6 @@
 #include "extend.h"
-#include "GPIO_Init.h"
-#include "variants.h"
 #include "includes.h"
+#include "GPIO_Init.h"
 
 // Power Supply
 #ifdef PS_ON_PIN
@@ -201,7 +200,7 @@ void loopBackEndFILRunoutDetect(void)
     return;
   if (!FIL_IsRunout())                                     // Filament not runout yet, need constant scanning to filter interference
     return;
-  if (!isPrinting() || isPause())                          // No printing or printing paused
+  if (!isPrinting() || isPaused())                         // No printing or printing paused
     return;
 
   setPrintRunout(true);
@@ -214,7 +213,7 @@ void loopFrontEndFILRunoutDetect(void)
 
   if (!getPrintRunout() && !getRunoutAlarm()) return;
 
-  if (setPrintPause(true, false) && !getRunoutAlarm())
+  if (printPause(true, PAUSE_NORMAL) && !getRunoutAlarm())
   {
     setPrintRunout(false);
     setRunoutAlarmTrue();
