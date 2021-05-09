@@ -5,8 +5,8 @@
 extern "C" {
 #endif
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include "GUI.h"
 
 #define IDLE_TOUCH 0xFFFF
@@ -44,7 +44,10 @@ typedef enum
   KEY_LABEL_7,
   KEY_TITLEBAR,
   KEY_INFOBOX,
-  KEY_IDLE = IDLE_TOUCH,
+  KEY_PAGEUP   = IDLE_TOUCH - 3,
+  KEY_PAGEDOWN = IDLE_TOUCH - 2,
+  KEY_BACK     = IDLE_TOUCH - 1,
+  KEY_IDLE     = IDLE_TOUCH,
 } KEY_VALUES;
 
 typedef enum
@@ -122,8 +125,8 @@ typedef struct
 {
   uint8_t *     text;
   GUI_POINT     pos;      // relative to icon top left corner
-  uint8_t       h_align;  //left, right or center of pos point
-  uint8_t       v_align;  //left, right or center of pos point
+  uint8_t       h_align;  // left, right or center of pos point
+  uint8_t       v_align;  // left, right or center of pos point
   uint16_t      fn_color;
   uint16_t      bk_color;
   GUI_TEXT_MODE text_mode;

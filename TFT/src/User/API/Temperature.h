@@ -5,9 +5,8 @@
 extern "C" {
 #endif
 
-#include <stdint.h>
 #include <stdbool.h>
-#include "Configuration.h"
+#include <stdint.h>
 #include "Settings.h"
 
 #define TEMPERATURE_QUERY_FAST_SECONDS 1  // "M105" query temperature every 1s
@@ -35,6 +34,7 @@ enum
   NOZZLE5,
   BED = MAX_HOTEND_COUNT,
   CHAMBER,
+  INVALID_HEATER,
 };
 
 typedef struct
@@ -73,11 +73,11 @@ void heatCoolDown(void);
 void heatSetCurrentTool(uint8_t tool);
 uint8_t heatGetCurrentTool(void);
 uint8_t heatGetCurrentHotend(void);
-bool heaterIsValid(uint8_t index);
+bool heaterDisplayIsValid(uint8_t index);
 
 bool heatGetIsWaiting(uint8_t index);
 bool heatHasWaiting(void);
-void heatSetIsWaiting(uint8_t index,HEATER_WAIT isWaiting);
+void heatSetIsWaiting(uint8_t index, HEATER_WAIT isWaiting);
 void heatClearIsWaiting(void);
 
 void updateNextHeatCheckTime(void);

@@ -146,10 +146,10 @@ const char *const ledKeyString[2] = {
 
 const char * const ledString[LED_VECT_SIZE] = {"R", "G", "B", "W", "P", "I"};
 
-const LED_VECT ledRed =   {0xFF, 0x00, 0x00, 0xFF, 0xFF, 0xFF};
-const LED_VECT ledGreen = {0x00, 0xFF, 0x00, 0xFF, 0xFF, 0xFF};
-const LED_VECT ledBlue =  {0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF};
-const LED_VECT ledWhite = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+const LED_VECT ledRed =   {0xFF, 0x00, 0x00, 0x00, 0xFF, 0xFF};
+const LED_VECT ledGreen = {0x00, 0xFF, 0x00, 0x00, 0xFF, 0xFF};
+const LED_VECT ledBlue =  {0x00, 0x00, 0xFF, 0x00, 0xFF, 0xFF};
+const LED_VECT ledWhite = {0xFF, 0xFF, 0xFF, 0x00, 0xFF, 0xFF};
 const LED_VECT ledOff =   {0x00, 0x00, 0x00, 0x00, 0x00, 0xFF};
 
 LED_VECT ledValue = {0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF};
@@ -170,7 +170,7 @@ void ledGetValue(LED_VECT * led)
 
 void ledSetValue(const LED_VECT * led, bool skipNeopixel)
 {
-  int size = skipNeopixel ? LED_VECT_SIZE - 2 : LED_VECT_SIZE;
+  int size = skipNeopixel ? LED_VECT_SIZE - 3 : LED_VECT_SIZE;
 
   for (int i = 0; i < size; i++)
     ledValue[i] = (*led)[i];
@@ -181,7 +181,7 @@ uint8_t ledGetComponentIndex(uint8_t index)
   return ledPage * PAGE_ITEMS + index;
 }
 
-uint8_t ledGetComponentValue(uint8_t index)
+static inline uint8_t ledGetComponentValue(uint8_t index)
 {
   return ledValue[ledGetComponentIndex(index)];
 }
@@ -328,10 +328,10 @@ void ledDrawKeyboard(void)
     }
   }
 
-  // draw unicode string
-  DrawCharIcon(&ledKeyRect[LED_KEY_RESET], MIDDLE, ICONCHAR_RESET, false, 0);
-  DrawCharIcon(&ledKeyRect[LED_KEY_CANCEL], MIDDLE, ICONCHAR_CANCEL, false, 0);
-  DrawCharIcon(&ledKeyRect[LED_KEY_OK], MIDDLE, ICONCHAR_OK, false, 0);
+  // draw control icons
+  drawCharIcon(&ledKeyRect[LED_KEY_RESET], CENTER, CHARICON_RESET, false, 0);
+  drawCharIcon(&ledKeyRect[LED_KEY_CANCEL], CENTER, CHARICON_CANCEL, false, 0);
+  drawCharIcon(&ledKeyRect[LED_KEY_OK], CENTER, CHARICON_OK, false, 0);
 
   // draw focus for current LED component
   ledDrawControl(ledIndex, true, true, false);

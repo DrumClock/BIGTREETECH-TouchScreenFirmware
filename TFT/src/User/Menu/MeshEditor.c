@@ -275,7 +275,7 @@ void meshDeallocData(void)
   probeHeightDisable();                                    // restore original software endstops state
 }
 
-bool processKnownDataFormat(char *dataRow)
+static inline bool processKnownDataFormat(char *dataRow)
 {
   bool isKnown = false;
   uint8_t i;
@@ -459,7 +459,7 @@ static inline float meshGetValueMax(void)
   return meshData->valueMax;
 }
 
-bool meshUpdateValueMinMax(float value)
+static inline bool meshUpdateValueMinMax(float value)
 {
   bool isValueChanged = false;
 
@@ -489,7 +489,7 @@ bool meshUpdateValueMinMax(float value)
   return isValueChanged;
 }
 
-void meshFullUpdateValueMinMax(void)
+static inline void meshFullUpdateValueMinMax(void)
 {
   if (!meshGetStatus())
     return;
@@ -626,13 +626,13 @@ void meshDrawKeyboard(void)
       drawStandardValue(&meshKeyRect[i], VALUE_STRING, meshKeyString[i], true, MESH_FONT_COLOR, MESH_BG_COLOR, 3, true);
   }
 
-  // draw unicode string
+  // draw control icons
   if (infoMachineSettings.EEPROM == 1)
-    DrawCharIcon(&meshKeyRect[ME_KEY_SAVE], MIDDLE, ICONCHAR_SAVE, false, 0);
+    drawCharIcon(&meshKeyRect[ME_KEY_SAVE], CENTER, CHARICON_SAVE, false, 0);
 
-  DrawCharIcon(&meshKeyRect[ME_KEY_OK], MIDDLE, ICONCHAR_OK, false, 0);
-  DrawCharIcon(&meshKeyRect[ME_KEY_RESET], MIDDLE, ICONCHAR_RESET, false, 0);
-  DrawCharIcon(&meshKeyRect[ME_KEY_HOME], MIDDLE, ICONCHAR_MOVE, false, 0);
+  drawCharIcon(&meshKeyRect[ME_KEY_OK], CENTER, CHARICON_OK, false, 0);
+  drawCharIcon(&meshKeyRect[ME_KEY_RESET], CENTER, CHARICON_RESET, false, 0);
+  drawCharIcon(&meshKeyRect[ME_KEY_HOME], CENTER, CHARICON_MOVE, false, 0);
 
   // restore default
   GUI_RestoreColorDefault();
@@ -667,14 +667,7 @@ void meshDrawMenu(void)
 
   // draw values
   if (meshGetStatus())
-  {
-    float minValue = meshGetValueMin();
-    float maxValue = meshGetValueMax();
-    float origValue = meshGetValueOrig(meshGetIndex());
-    float curValue = meshGetValue(meshGetIndex());
-
-    meshDrawInfo(&minValue, &maxValue, &origValue, &curValue);
-  }
+    meshDrawFullInfo();
 }
 
 void meshSave(bool saveOnChange)
