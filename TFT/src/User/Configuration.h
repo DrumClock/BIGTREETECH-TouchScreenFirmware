@@ -1,6 +1,6 @@
 #ifndef _CONFIGURATION_H_
 #define _CONFIGURATION_H_
-#define CONFIG_VERSION 20210321
+#define CONFIG_VERSION 20210513
 
 //===========================================================================
 //============================ Developer Settings ===========================
@@ -140,107 +140,46 @@
 //=========================== Machine Settings ==============================
 //===========================================================================
 
-/**
- * RepRapFirmware Compatibility
- * Uncomment for RepRapFirmware.
- * To work with RepRapFirmware, Add M575 P1 S2 B115200 to the end of config.g file in RRF motherboard
- * sd card.
-*/
-//#define RepRapFirmware
+#define HOTEND_NUM      1  // set in 1~6
+#define EXTRUDER_NUM    1  // set in 1~6
+#define MIXING_EXTRUDER 0  // Default: 0. For mixing_extruder set to 1 (This option turns off autodetection
+                           // of the number of extruders)
+#define FAN_NUM         1  // set in 1~6
+#define ENABLE_CTRL_FAN 1  // Set 0 to disable & 1 to enable controller fan speed control for Idle and Active
+                           // cooling if marlin supports ontroller fan (M710).
 
-/**
- * Show bootscreen when starting up
- */
-#define SHOW_BTT_BOOTSCREEN
+#define PREHEAT_LABELS {"PLA", "PETG", "ABS", "WOOD", "TPU", "NYLON"}
+#define PREHEAT_HOTEND {200,   240,    230,   170,    220,   250}
+#define PREHEAT_BED    { 60,    70,     90,    50,     50,    90}
 
-/**
- * The duration and frequency for the UI feedback sound.
- * Set these to 0 to disable audio feedback in the LCD menus.
- * Only valid for SERIAL_TSC LCD MODE and if BUZZER_PIN is set or available.
- *
- * Note: Test audio output with the G-Code:
- * M300 S<frequency Hz> P<duration ms>
- */
-#define BUZZER_FREQUENCY_DURATION_MS 20 // Default 20
-#define BUZZER_FREQUENCY_HZ 10000       // Default 10000, 20Hz to 60KHz
-#define BUZZER_STOP_LEVEL false
+#define HEAT_MAX_TEMP   {275,       275,       275,       275,       275,       275,       150,    60}
+#define HEAT_SIGN_ID    {"T0:",     "T1:",     "T2:",     "T3:",     "T4:",     "T5:",     "B:",   "C:"}
+#define HEAT_DISPLAY_ID {"T0",      "T1",      "T2",      "T3",      "T4",      "T5",      "Bed",  "Chamber"}
+#define HEAT_CMD        {"M104 T0", "M104 T1", "M104 T2", "M104 T3", "M104 T4", "M104 T5", "M140", "M141"}
+#define HEAT_WAIT_CMD   {"M109 T0", "M109 T1", "M109 T2", "M109 T3", "M109 T4", "M109 T5", "M190", "M191"}
 
-/**
- * Toast notification duration (in ms)
- * Set the duration for displaying toast notification on top of the screen
- */
-#define TOAST_DURATION 3000
-
-/**
- * Notification style for ACK messages
- * Set the notification style to use for displaying the ACK messages which start with 'echo:'
- *
- * NOTE: The OFF value is applied to any ACK message type (e.g. even to known echo ACK).
- *      It means that any kind of ACK message is silently discard
- *
- * Options: [OFF: 0, POPUP: 1, TOAST: 2]
- *  OFF:   No notification. The message is ignored.
- *  POPUP: Display a popup window for user confirmation.
- *  TOAST: A Toast notification is displayed for few seconds. No user interaction is needed
- *
- */
-#define ACK_NOTIFICATION_STYLE 2
-
-/**
- * Default Touch Mode Color Options
- * Options: 0: WHITE,      1: BLACK,       2: RED,     3: GREEN,     4: BLUE,   5: CYAN,
- *          6: MAGENTA,    7: YELLOW,      8: ORANGE,  9: PURPLE,   10: LIME,  11: BROWN,
- *         12: DARKBLUE,  13: DARKGREEN,  14: GRAY,   15: DARKGRAY
- */
-#define TITLE_BACKGROUND_COLOR     1  // Title background color // 0xD928
-#define BACKGROUND_COLOR           1  // Background color // 0x0A29
-#define FONT_COLOR                 0  // Font foreground color
-#define REMINDER_FONT_COLOR        2  // Reminder font color, such as: "No print attached", "Busy processing", etc.
-#define VOLUME_REMINDER_FONT_COLOR 5  // Volume reminder font color, such as: "Card inserted", "Card removed"
-#define STATUS_XYZ_BG_COLOR        15 // Background color for X Y Z position display in Status Screen.
-#define LISTVIEW_BORDER_COLOR      15 // Border color in List view
-#define LISTVIEW_ICON_COLOR        15 // icon color in List view
-
-#define HOTEND_NUM   2    // set in 1~6
-#define EXTRUDER_NUM 2   // set in 1~6
-#define FAN_NUM      2    // set in 1~6
-#define FAN_CTRL_NUM 0    // set in 1~2
-#define MIXING_EXTRUDER 0 // set default 0, for mixing_extruder 1 (this option turns off autodetection of the number of extruders)
-
-#define PREHEAT_LABELS   {"PLA", "PETG", "ABS", "WOOD", "TPU", "NYLON"}
-#define PREHEAT_HOTEND   {200,   240,    230,   170,    220,   250}
-#define PREHEAT_BED      { 60,    70,     90,    50,     50,    90}
-
-#define HEAT_MAX_TEMP    {290,       290,       290,       290,       290,       290,       150,    60}   //max temperature can be set
-#define HEAT_SIGN_ID     {"T0:",     "T1:",     "T2:",     "T3:",     "T4:",     "T5:",     "B:",   "C:"}
-#define HEAT_DISPLAY_ID  {"T0",      "T1",      "T2",      "T3",      "T4",      "T5",      "Bed",  "Chamber"}
-#define HEAT_CMD         {"M104 T0", "M104 T1", "M104 T2", "M104 T3", "M104 T4", "M104 T5", "M140", "M141"};
-#define HEAT_WAIT_CMD    {"M109 T0", "M109 T1", "M109 T2", "M109 T3", "M109 T4", "M109 T5", "M190", "M191"};
-
-#define TOOL_CHANGE      {"T0",   "T1",      "T2",      "T3",      "T4",      "T5"}
-#define EXTRUDER_ID      {"E0",   "E1",      "E2",      "E3",      "E4",      "E5"}
+#define TOOL_CHANGE {"T0", "T1", "T2", "T3", "T4", "T5"}
+#define EXTRUDER_ID {"E0", "E1", "E2", "E3", "E4", "E5"}
 
 // Prevent extrusion if the temperature is below set temperature
 #define PREVENT_COLD_EXTRUSION_MINTEMP 180
 
 /**
- * Fan control & Fan type Options:
- *  0: FAN_TYPE_F       - default cooling fan speed (Check Marlin GCode M106)
- *  1: FAN_TYPE_CTRL_S  - Controller fan speed for stepper or hot bed ON (Check Marlin GCode M710)
- *  2: FAN_TYPE_CTRL_I  - Controller fan idle speed  (Check Marlin gcode - M710)
- *  8: FAN_TYPE_UNKNOWN - Unknown / Not defined
+ * Cooling Fan & Controller Fan
+ * Cooling fan have index from 0 to 5.
+ * Controller fan have two speed (Active and Idle) index 6 and 7.
  */
-#define FAN_MAX_PWM      {       255,       255,       255,       255,       255,       255,       255,       255 };
-#define FAN_DISPLAY_ID   {      "F0",      "F1",      "F2",      "F3",      "F4",      "F5",     "CtL",     "CtI" };
-#define FAN_CMD          { "M106 P0", "M106 P1", "M106 P2", "M106 P3", "M106 P4", "M106 P5",    "M710",    "M710" };
-#define FAN_TYPE         {         0,         0,         0,         0,         0,         0,         1,         2 };
+#define FAN_MAX_PWM    {255,  255,  255,  255,  255,  255,  255,   255}
+#define FAN_DISPLAY_ID {"F0", "F1", "F2", "F3", "F4", "F5", "CtS", "CtI"}
+#define FAN_CMD        {"M106 P0 S%d\n", "M106 P1 S%d\n", "M106 P2 S%d\n", "M106 P3 S%d\n", "M106 P4 S%d\n", "M106 P5 S%d\n", \
+                        "M710 S%d\n",    "M710 I%d\n" }
 
 // Speed/flow rate names displayed in status screen
 #define SPEED_ID {"Sp.", "Fr."}  // (speed, flow rate)
 
 // Axes names displayed in Parameter Settings menu
 #define AXIS_DISPLAY_ID    {"X", "Y", "Z", "E0", "E1"}  // (X, Y, Z, E0, E1)
-#define STEPPER_DISPLAY_ID {"X", "X2", "Y", "Y2", "Z", "Z2", "E0", "E1"} // (X, X2, Y, Y2, Z, Z2, E0, E1)
+#define STEPPER_DISPLAY_ID {"X", "X2", "Y", "Y2", "Z", "Z2", "E0", "E1"}  // (X, X2, Y, Y2, Z, Z2, E0, E1)
 
 // Default X & Y speed (mm/min)
 #define SPEED_XY_SLOW   1000
@@ -258,11 +197,11 @@
 #define EXTRUDE_FAST_SPEED   1200
 
 // Size of machine
-#define X_MIN_POS 0
-#define Y_MIN_POS 0
-#define Z_MIN_POS 0
-#define X_MAX_POS 330
-#define Y_MAX_POS 330
+#define X_MIN_POS   0
+#define Y_MIN_POS   0
+#define Z_MIN_POS   0
+#define X_MAX_POS 235
+#define Y_MAX_POS 235
 #define Z_MAX_POS 250
 
 /**
@@ -375,26 +314,26 @@
 #define AUTO_SAVE_LOAD_BL_VALUE 1  // Default: 1
 
 // PID autotune
-#define PID_CMD {"M303 U1 C8 E0", "M303 U1 C8 E1", "M303 U1 C8 E2", "M303 U1 C8 E3", "M303 U1 C8 E4", "M303 U1 C8 E5", "M303 U1 C8 E-1", ""};
+#define PID_CMD {"M303 U1 C8 E0", "M303 U1 C8 E1", "M303 U1 C8 E2", "M303 U1 C8 E3", "M303 U1 C8 E4", "M303 U1 C8 E5", "M303 U1 C8 E-1", ""}
 #define PID_PROCESS_TIMEOUT (15 * 60000)  // (MilliSeconds, 1 minute = 60000 MilliSeconds)
 
 /**
- * M600 ; emulate M600
- * The TFT intercepts the M600 gcode (filament change) and emulates the logic instead of demanding it to Marlin firmware.
+ * M600: Emulate M600
+ * The TFT intercepts the M600 gcode (filament change) and emulates the logic instead of passing it to Marlin firmware.
  *
  * NOTE: Enable it, in case Marlin firmware does not properly support M600 on the mainboard.
  */
 #define EMULATE_M600 true  // To enabled: true | To disabled: false (Default: true)
 
 /**
- * M601 ; pause print
+ * M601: Pause Print
  * PrusaSlicer can add M601 on certain height.
  * Acts here like manual pause.
  */
 #define NOZZLE_PAUSE_M601
 
 /**
- * M701, M702 ; Marlin filament load unload gcodes support
+ * M701, M702: Marlin filament load unload gcodes support
  * FILAMENT_LOAD_UNLOAD_GCODES option on Marlin configuration_adv.h need to be uncommented.
  * Adds a submenu to the movement menu for selecting load and unload actions.
  */
@@ -594,20 +533,7 @@
 #define HOME_BEFORE_PLR false  // To enabled: true | To disabled: false (Default: false)
 
 // Backup power / UPS to move Z axis on power loss
-#define BTT_MINI_UPS    true   //to enabled: true | to disabled: false
-
-// (mm) Raise Z axis on resume (on power loss with UPS)
-#define POWER_LOSS_ZRAISE 20
-
-// Prevent extrusion if the temperature is below set temperature
-#define PREVENT_COLD_EXTRUSION_MINTEMP 170
-
-/**
- * Maximum hotend temperature of automatic shut down after printing.
- * When enable automatic shutdown(Auto Power), when the hotend temperature is higher than this value
- * turn on the fan to cool down, wait for the hotend temperature to be lower than this value, then turn off the power automatically
- */
-#define AUTO_SHUT_DOWN_MAXTEMP 50
+#define BTT_MINI_UPS false  // To enabled: true | To disabled: false (Default: false)
 
 // Raise Z axis on resume (on power loss with UPS)
 #define POWER_LOSS_ZRAISE 10  // (mm) Default: 10
@@ -629,8 +555,8 @@
  * CUSTOM_X_LABEL is the name of the custom button, CUSTOM_X_GCODE is the G-code to be sent by the custom button,
  * this should always end with a New-Line character '\n'.
  */
-#define CUSTOM_0_LABEL "Dis. Servo & Steppers"
-#define CUSTOM_0_GCODE "M280 P0 S90\nM84\n"
+#define CUSTOM_0_LABEL "Disable Steppers"
+#define CUSTOM_0_GCODE "M84\n"
 #define CUSTOM_1_LABEL "Init SD Card"
 #define CUSTOM_1_GCODE "M21\n"
 #define CUSTOM_2_LABEL "Release SD Card"
@@ -667,12 +593,13 @@
  * Enable Start & End G-code in SETTINGS -> FEATURE menu.
  */
 // Start G-code - run this G-code before starting print
-#define PRINT_START_GCODE "M75\n" //"G28 XY R10\n" // Raise Z 10mm before homing X & Y
+#define PRINT_START_GCODE "G28 XY R10\n"  // Raise Z 10mm before homing X & Y
 
 // End G-code - run this G-code after finishing print
-#define PRINT_END_GCODE "M77\n" // "G90\nG1 E-4\nG92 E0\nM18\n" // Switch to absolute positioning, reduce filament pressure by performing small retract, reset extruder position, disable steppers
+#define PRINT_END_GCODE "G90\nG1 E-4\nG92 E0\nM18\n"  // Switch to absolute positioning, reduce filament pressure by
+                                                      // performing small retract, reset extruder position, disable steppers
 
 // Cancel G-code - run this G-code after canceling print
-#define PRINT_CANCEL_GCODE "M77\n" // "M104 S0\nM140 S0\nG28 XY R10\nM107\nM18\n" // Home XY and raise Z 10mm
+#define PRINT_CANCEL_GCODE "M104 S0\nM140 S0\nG28 XY R10\nM107\nM18\n"  // Home XY and raise Z 10mm
 
 #endif

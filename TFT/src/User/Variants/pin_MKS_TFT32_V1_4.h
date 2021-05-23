@@ -22,8 +22,6 @@
 // LCD interface
 #ifndef TFTLCD_DRIVER
   #define TFTLCD_DRIVER               HX8558  // Type of LCD driver, now support[RM68042, ILI9488, ILI9341, ILI9325, ST7789, HX8558].
-  #define TFTLCD_0_DEGREE_REG_VALUE   0xA4
-  #define TFTLCD_180_DEGREE_REG_VALUE 0X64
 #endif
 //#define STM32_HAS_FSMC  // FSMC 8080 interface(high speed), or normal IO interface(low speed)
 #ifndef LCD_DATA_16BIT
@@ -176,7 +174,7 @@
 //
 
 // ST7920 Emulator SPI pins
-// #define ST7920_EMULATOR  // uncomment to enable Marlin mode
+//#define ST7920_EMULATOR  // uncomment to enable Marlin mode
 #ifdef ST7920_EMULATOR
   #define ST7920_SPI _SPI3
 #endif
