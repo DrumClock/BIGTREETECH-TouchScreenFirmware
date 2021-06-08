@@ -45,11 +45,16 @@ void Hardware_GenericInit(void)
   XPT2046_Init();
   W25Qxx_Init();
   LCD_Init();
-  readStoredPara();         // Read settings parameter
-  LCD_RefreshDirection();   // refresh display direction after reading settings
-  scanUpdates();            // scan icon, fonts and config files
-  checkflashSign();         // check font/icon/config signature in SPI flash for update
-  initMachineSetting();     // load default machine settings
+  readStoredPara();        // Read settings parameter
+
+  #ifdef SERIAL_DEBUG_PORT
+    Serial_ReSourceInit();  // Initialize serial ports first if debugging is enabled
+  #endif
+
+  LCD_RefreshDirection();  // refresh display direction after reading settings
+  scanUpdates();           // scan icon, fonts and config files
+  checkflashSign();        // check font/icon/config signature in SPI flash for update
+  initMachineSetting();    // load default machine settings
 
   #ifdef LED_COLOR_PIN
     knob_LED_Init();

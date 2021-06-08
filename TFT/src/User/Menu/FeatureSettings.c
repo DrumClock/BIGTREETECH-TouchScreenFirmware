@@ -48,15 +48,33 @@ const  u8 item_movespeed[ITEM_SPEED_NUM]  = {
                                               LABEL_FAST_SPEED
                                             };
 
+const char *const itemSortBy[SORT_BY_COUNT] =
+{
+  //item value text(only for custom value)
+  "Date ▼",
+  "Date ▲",
+  "Name ▲",
+  "Name ▼",
+};
+
 //
 //add key number index of the items
 //
 typedef enum
 {
-  SKEY_HIDEACK = 0,
-  SKEY_INVERT_X,
-  SKEY_INVERT_Y,
-  SKEY_INVERT_Z,
+  SKEY_TERMINAL_ACK = 0,
+  SKEY_PERSISTENT_INFO,
+  SKEY_FILE_LIST_MODE,
+  SKEY_FILE_SORT_BY,
+  SKEY_ACK_NOTIFICATION,
+  SKEY_EMULATE_M600,
+  SKEY_SERIAL_ALWAYS_ON,
+  SKEY_SPEED,
+  SKEY_AUTO_LOAD_LEVELING,
+  SKEY_FAN_SPEED_PERCENT,
+  SKEY_XY_OFFSET_PROBING,
+  SKEY_Z_STEPPERS_ALIGNMENT,
+
   #ifdef PS_ON_PIN
     SKEY_POWER,
   #endif
@@ -168,12 +186,12 @@ void updateFeatureSettings(uint8_t key_val)
       menuDrawListItem(&featureSettingsItems.items[key_val], key_val);
      break;
 
-    case SKEY_INVERT_Y:
-      infoSettings.invert_axis[Y_AXIS] = (infoSettings.invert_axis[Y_AXIS] + 1) % TOGGLE_NUM;
-      settingPage[item_index].icon = toggleitem[infoSettings.invert_axis[Y_AXIS]];
-      featureSettingsItems.items[key_val] = settingPage[item_index];
+      case SKEY_FILE_SORT_BY:
+      infoSettings.files_sort_by = (infoSettings.files_sort_by + 1) % SORT_BY_COUNT;
+      break;
 
-      menuDrawListItem(&featureSettingsItems.items[key_val], key_val);
+    case SKEY_ACK_NOTIFICATION:
+      infoSettings.ack_notification = (infoSettings.ack_notification + 1) % ITEM_NOTIFICATION_TYPE_NUM;
       break;
 
     case SKEY_INVERT_Z:
@@ -279,10 +297,13 @@ void updateFeatureSettings(uint8_t key_val)
         menuDrawListItem(&featureSettingsItems.items[key_val], key_val);
         break;
 
-      case SKEY_LCD_DIM_IDLE_TIMER:
-        infoSettings.lcd_idle_timer = (infoSettings.lcd_idle_timer + 1) % ITEM_SECONDS_NUM;
-        settingPage[item_index].valueLabel = itemDimTime[infoSettings.lcd_idle_timer];
-        featureSettingsItems.items[key_val] = settingPage[item_index];
+      case SKEY_FILE_SORT_BY:
+        setDynamicTextValue(itemPos, (char *)itemSortBy[infoSettings.files_sort_by]);
+        break;
+
+      case SKEY_ACK_NOTIFICATION:
+        setDynamicTextValue(itemPos, (char *)itemNotificationType[infoSettings.ack_notification]);
+        break;
 
         menuDrawListItem(&featureSettingsItems.items[key_val], key_val);
         break;
@@ -437,7 +458,50 @@ void loadFeatureSettings(){
 
 void menuFeatureSettings(void)
 {
-  KEY_VALUES key_num = KEY_IDLE;
+  //
+  //set item types
+  //
+  LISTITEM settingPage[SKEY_COUNT] = {
+    {CHARICON_TOGGLE_ON,   LIST_TOGGLE,        LABEL_TERMINAL_ACK,           LABEL_BACKGROUND},
+    {CHARICON_TOGGLE_ON,   LIST_TOGGLE,        LABEL_PERSISTENT_INFO,        LABEL_BACKGROUND},
+    {CHARICON_TOGGLE_ON,   LIST_TOGGLE,        LABEL_FILE_LIST_MODE,         LABEL_BACKGROUND},
+    {CHARICON_BLANK,       LIST_CUSTOMVALUE,   LABEL_FILE_SORT_BY,           LABEL_DYNAMIC},
+    {CHARICON_BLANK,       LIST_CUSTOMVALUE,   LABEL_ACK_NOTIFICATION,       LABEL_DYNAMIC},
+    {CHARICON_TOGGLE_ON,   LIST_TOGGLE,        LABEL_EMULATE_M600,           LABEL_BACKGROUND},
+    {CHARICON_TOGGLE_ON,   LIST_TOGGLE,        LABEL_SERIAL_ALWAYS_ON,       LABEL_BACKGROUND},
+    {CHARICON_BLANK,       LIST_CUSTOMVALUE,   LABEL_MOVE_SPEED,             LABEL_NORMAL},
+    {CHARICON_TOGGLE_ON,   LIST_TOGGLE,        LABEL_AUTO_LOAD_LEVELING,     LABEL_BACKGROUND},
+    {CHARICON_TOGGLE_ON,   LIST_TOGGLE,        LABEL_FAN_SPEED_PERCENT,      LABEL_BACKGROUND},
+    {CHARICON_TOGGLE_ON,   LIST_TOGGLE,        LABEL_XY_OFFSET_PROBING,      LABEL_BACKGROUND},
+    {CHARICON_TOGGLE_ON,   LIST_TOGGLE,        LABEL_Z_STEPPERS_ALIGNMENT,   LABEL_BACKGROUND},
+
+    #ifdef PS_ON_PIN
+      {CHARICON_BLANK,       LIST_CUSTOMVALUE,   LABEL_PS_ON,                  LABEL_OFF},
+    #endif
+
+    #ifdef FIL_RUNOUT_PIN
+      {CHARICON_BLANK,       LIST_CUSTOMVALUE,   LABEL_FIL_RUNOUT,             LABEL_OFF},
+    #endif
+
+    {CHARICON_TOGGLE_ON,   LIST_TOGGLE,        LABEL_PL_RECOVERY_EN,         LABEL_BACKGROUND},
+    {CHARICON_TOGGLE_ON,   LIST_TOGGLE,        LABEL_PL_RECOVERY_HOME,       LABEL_BACKGROUND},
+    {CHARICON_TOGGLE_ON,   LIST_TOGGLE,        LABEL_BTT_MINI_UPS,           LABEL_BACKGROUND},
+
+    #ifdef LED_COLOR_PIN
+      {CHARICON_BLANK,       LIST_CUSTOMVALUE,   LABEL_KNOB_LED_COLOR,         LABEL_OFF},
+
+      #ifdef LCD_LED_PWM_CHANNEL
+        {CHARICON_TOGGLE_ON,   LIST_TOGGLE,        LABEL_KNOB_LED_IDLE,          LABEL_BACKGROUND},
+      #endif
+    #endif
+
+    {CHARICON_TOGGLE_ON,   LIST_TOGGLE,        LABEL_START_GCODE_ENABLED,    LABEL_BACKGROUND},
+    {CHARICON_TOGGLE_ON,   LIST_TOGGLE,        LABEL_END_GCODE_ENABLED,      LABEL_BACKGROUND},
+    {CHARICON_TOGGLE_ON,   LIST_TOGGLE,        LABEL_CANCEL_GCODE_ENABLED,   LABEL_BACKGROUND},
+    // Keep reset settings always at the bottom of the settings menu list.
+    {CHARICON_BLANK,       LIST_MOREBUTTON,    LABEL_SETTINGS_RESET,         LABEL_BACKGROUND}
+  };
+
   SETTINGS now = infoSettings;
   fe_cur_page = 0;
   loadFeatureSettings();
